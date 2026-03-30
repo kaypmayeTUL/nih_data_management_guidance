@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIH Data Management & Sharing Plan | Howard-Tilton Memorial Library</title>
+<style>
+  :root {
+    --tulane-green: #285C4D;
+    --tulane-green-dark: #1e4a3d;
+    --tulane-green-light: #3a7a68;
+    --tulane-blue: #71C5E8;
+    --tulane-blue-light: #a8ddf2;
+    --storm-shutters: #00778B;
+    --medallion: #CC9900;
+    --medallion-light: #f9f3dc;
+    --light-bg: #f5f9f7;
+    --card-bg: #ffffff;
+    --text-dark: #1c3530;
+    --text-mid: #3d6459;
+    --text-light: #6b8f84;
+    --border-light: #d0e4de;
+    --green-tint: #e8f2ee;
+    --blue-tint: #e3f4fb;
+    --red-soft: #fdecea;
+    --red-text: #c0392b;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--light-bg);
+    color: var(--text-dark);
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  .nav-container {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: var(--tulane-green);
+    padding: 10px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  }
+  .nav-title { color: var(--white); font-size: 1.05rem; font-weight: 600; }
+  .nav-controls { display: flex; align-items: center; gap: 12px; }
+  .page-selector {
+    padding: 7px 11px;
+    border: 2px solid var(--tulane-blue);
+    border-radius: 6px;
+    background: var(--white);
+    color: var(--tulane-green);
+    font-size: 0.92rem;
+    cursor: pointer;
+    min-width: 340px;
+  }
+  .nav-btn {
+    background: var(--tulane-blue);
+    color: var(--tulane-green-dark);
+    border: none; padding: 7px 15px;
+    border-radius: 6px; cursor: pointer;
+    font-weight: 700; font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+  .nav-btn:hover { background: var(--white); transform: translateY(-1px); }
+  .nav-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+  .page-indicator { color: var(--tulane-blue); font-size: 0.88rem; min-width: 70px; text-align: center; }
+
+  /* Activity tracker badge */
+  .activity-tracker {
+    background: var(--tulane-blue);
+    color: var(--tulane-green-dark);
+    padding: 5px 12px; border-radius: 20px;
+    font-size: 0.82rem; font-weight: 700; white-space: nowrap;
+  }
+
+  /* ── SLIDES ── */
+  .slide-container { padding-top: 70px; }
+  .slide { display: none; min-height: calc(100vh - 70px); padding: 0 0 40px 0; }
+  .slide.active { display: block; }
+
+  /* ── TITLE SLIDE ── */
+  .title-slide {
+    background: linear-gradient(135deg, var(--tulane-green) 0%, var(--tulane-green-light) 60%, #2a8c72 100%);
+    min-height: calc(100vh - 70px);
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 60px 80px; position: relative; overflow: hidden;
+  }
+  .title-slide::before {
+    content: '';
+    position: absolute; top: -80px; right: -80px;
+    width: 420px; height: 420px;
+    background: rgba(113,197,232,0.12);
+    border-radius: 50%;
+  }
+  .title-slide::after {
+    content: '';
+    position: absolute; bottom: -60px; right: 120px;
+    width: 280px; height: 280px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .title-eyebrow {
+    font-size: 0.82rem; font-weight: 700; letter-spacing: 3px;
+    color: var(--tulane-blue); text-transform: uppercase; margin-bottom: 18px;
+  }
+  .title-slide h1 {
+    font-size: 3.2rem; font-weight: 700; color: var(--white);
+    line-height: 1.15; margin-bottom: 22px; max-width: 700px;
+  }
+  .title-slide h1 span { color: var(--tulane-blue); }
+  .title-subtitle {
+    font-size: 1.25rem; color: rgba(255,255,255,0.85);
+    max-width: 580px; margin-bottom: 40px; line-height: 1.55;
+  }
+  .title-badges { display: flex; gap: 14px; flex-wrap: wrap; }
+  .title-badge {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+    color: var(--white); padding: 7px 18px; border-radius: 20px;
+    font-size: 0.88rem; font-weight: 600; backdrop-filter: blur(4px);
+  }
+  .title-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.2);
+    padding: 14px 80px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .title-footer span { color: rgba(255,255,255,0.75); font-size: 0.88rem; }
+
+  /* ── CONTENT SLIDES ── */
+  .content-slide { background: var(--white); max-width: 1100px; margin: 30px auto; border-radius: 16px; padding: 48px 56px; box-shadow: 0 4px 24px rgba(40,92,77,0.08); }
+
+  .slide-header { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 3px solid var(--tulane-blue); }
+  .slide-header h2 { font-size: 2rem; color: var(--tulane-green); line-height: 1.2; }
+  .slide-header .subhead { font-size: 1rem; color: var(--text-mid); font-style: italic; margin-top: 6px; }
+
+  p { margin-bottom: 16px; font-size: 1.05rem; line-height: 1.75; }
+
+  /* ── OBJECTIVE ROWS ── */
+  .objective-row {
+    display: flex; align-items: flex-start; gap: 18px;
+    padding: 14px 18px; border-radius: 10px;
+    margin-bottom: 10px; border-left: 4px solid var(--tulane-green);
+    background: var(--green-tint);
+    font-size: 1.05rem; line-height: 1.6;
+  }
+  .objective-row:nth-child(even) { background: var(--white); border-left-color: var(--storm-shutters); }
+  .objective-verb { font-weight: 700; color: var(--tulane-green); min-width: 90px; padding-top: 1px; }
+
+  /* ── TWO-COL GRID ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .four-col { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border-light);
+    border-radius: 12px; padding: 22px 24px;
+    box-shadow: 0 2px 10px rgba(40,92,77,0.06);
+  }
+  .card.green-top { border-top: 4px solid var(--tulane-green); }
+  .card.blue-top { border-top: 4px solid var(--tulane-blue); }
+  .card.teal-top { border-top: 4px solid var(--storm-shutters); }
+  .card.gold-top { border-top: 4px solid var(--medallion); }
+  .card h3 { font-size: 1.08rem; font-weight: 700; margin-bottom: 10px; color: var(--tulane-green); }
+  .card h3.teal { color: var(--storm-shutters); }
+  .card h3.gold { color: var(--medallion); }
+  .card p, .card li { font-size: 0.97rem; line-height: 1.65; color: var(--text-dark); }
+  .card ul { margin-left: 18px; }
+  .card ul li { margin-bottom: 6px; }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box {
+    background: var(--green-tint); border-left: 5px solid var(--tulane-green);
+    border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 22px 0;
+    font-size: 1.02rem; line-height: 1.75;
+  }
+  .highlight-box.blue { background: var(--blue-tint); border-left-color: var(--storm-shutters); }
+  .highlight-box.gold { background: var(--medallion-light); border-left-color: var(--medallion); }
+  .highlight-box.red { background: var(--red-soft); border-left-color: var(--red-text); color: var(--red-text); }
+  .highlight-box strong { color: var(--tulane-green); }
+  .highlight-box.blue strong { color: var(--storm-shutters); }
+  .highlight-box.gold strong { color: #7a5a00; }
+
+  /* ── NUMBERED ELEMENT CARDS ── */
+  .element-card {
+    background: var(--card-bg); border: 1px solid var(--border-light);
+    border-radius: 12px; padding: 20px 22px;
+    box-shadow: 0 2px 8px rgba(40,92,77,0.06);
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .element-num {
+    background: var(--tulane-green); color: var(--white);
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem; flex-shrink: 0;
+  }
+  .element-body h4 { font-size: 1.05rem; color: var(--tulane-green); font-weight: 700; margin-bottom: 5px; }
+  .element-body p { font-size: 0.96rem; color: var(--text-dark); margin: 0; }
+
+  /* ── Q FORMAT (2026) ── */
+  .q-row {
+    display: flex; align-items: flex-start; gap: 0;
+    border-radius: 8px; overflow: hidden;
+    margin-bottom: 8px; border: 1px solid var(--border-light);
+    font-size: 0.97rem;
+  }
+  .q-num {
+    background: var(--tulane-green); color: var(--white);
+    padding: 12px 14px; font-weight: 800; font-size: 0.88rem;
+    min-width: 46px; text-align: center; align-self: stretch;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .q-row.gold-q .q-num { background: var(--medallion); }
+  .q-text {
+    flex: 1; padding: 12px 16px; color: var(--text-dark);
+    background: var(--white); line-height: 1.55;
+  }
+  .q-row.gold-q .q-text { background: var(--medallion-light); }
+  .q-type {
+    padding: 12px 14px; background: var(--green-tint);
+    font-weight: 700; font-size: 0.82rem; color: var(--tulane-green);
+    text-align: center; align-self: stretch; display: flex; align-items: center;
+    white-space: nowrap; min-width: 110px; justify-content: center;
+  }
+  .q-row.gold-q .q-type { background: #f5e9b8; color: #7a5a00; }
+
+  /* ── FAIR CARDS ── */
+  .fair-card {
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 0 3px 14px rgba(40,92,77,0.1);
+  }
+  .fair-header {
+    padding: 22px 20px 16px; text-align: center;
+  }
+  .fair-letter {
+    font-size: 2.8rem; font-weight: 800; color: var(--white);
+    line-height: 1; margin-bottom: 4px;
+  }
+  .fair-word { font-size: 1.05rem; font-weight: 700; color: rgba(255,255,255,0.9); }
+  .fair-body { background: var(--white); padding: 18px 20px; }
+  .fair-body li { font-size: 0.93rem; line-height: 1.6; margin-bottom: 7px; list-style: none; padding-left: 0; color: var(--text-dark); }
+  .fair-body li::before { content: '→ '; color: var(--tulane-green); font-weight: 700; }
+
+  /* ── TABLE ── */
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 0.97rem; }
+  th { background: var(--tulane-green); color: var(--white); padding: 12px 16px; text-align: left; }
+  td { padding: 11px 16px; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+  tr:nth-child(even) td { background: var(--green-tint); }
+  td strong { color: var(--tulane-green); }
+
+  /* ── STAT BOXES ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .stat-box {
+    background: var(--tulane-green); color: var(--white);
+    border-radius: 12px; padding: 22px 24px; text-align: center;
+  }
+  .stat-box.blue { background: var(--storm-shutters); }
+  .stat-num { font-size: 2.2rem; font-weight: 800; color: var(--tulane-blue); line-height: 1; margin-bottom: 6px; }
+  .stat-box.blue .stat-num { color: var(--white); }
+  .stat-label { font-size: 0.92rem; font-weight: 600; color: rgba(255,255,255,0.85); }
+
+  /* ── TIMELINE STEPS ── */
+  .timeline { display: flex; gap: 0; margin: 28px 0; }
+  .step {
+    flex: 1; text-align: center; position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute; top: 24px; right: -12px;
+    font-size: 1.4rem; color: var(--tulane-blue); font-weight: 700;
+    z-index: 1;
+  }
+  .step-icon {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--tulane-green); color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin: 0 auto 10px;
+    box-shadow: 0 3px 12px rgba(40,92,77,0.25);
+  }
+  .step-label { font-weight: 700; font-size: 0.9rem; color: var(--tulane-green); margin-bottom: 6px; }
+  .step-desc { font-size: 0.82rem; color: var(--text-mid); line-height: 1.5; padding: 0 6px; }
+
+  /* ── CHECKLIST ── */
+  .checklist-section { margin-bottom: 24px; }
+  .checklist-section h3 {
+    font-size: 1rem; font-weight: 700; color: var(--tulane-green);
+    border-bottom: 2px solid var(--tulane-green); padding-bottom: 5px; margin-bottom: 12px;
+  }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 8px 10px; border-radius: 6px; margin-bottom: 6px;
+    background: var(--white); border: 1px solid var(--border-light);
+    font-size: 0.97rem; line-height: 1.5; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .check-item:hover { background: var(--green-tint); }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--tulane-green);
+    flex-shrink: 0; margin-top: 2px; cursor: pointer;
+  }
+  .check-item.checked { background: var(--green-tint); text-decoration: line-through; color: var(--text-light); }
+
+  /* ── SAMPLE PLAN ROWS ── */
+  .sample-row {
+    display: flex; align-items: flex-start; gap: 0;
+    border: 1px solid var(--border-light); border-radius: 8px;
+    overflow: hidden; margin-bottom: 8px; font-size: 0.96rem;
+  }
+  .sample-q {
+    background: var(--green-tint); color: var(--tulane-green);
+    font-weight: 700; padding: 12px 14px; min-width: 210px; border-right: 1px solid var(--border-light);
+    font-size: 0.9rem;
+  }
+  .sample-badge {
+    padding: 12px 14px; font-weight: 800; font-size: 0.88rem;
+    text-align: center; min-width: 60px; border-right: 1px solid var(--border-light);
+  }
+  .badge-yes { background: var(--tulane-green); color: var(--white); }
+  .badge-na { background: var(--storm-shutters); color: var(--white); }
+  .sample-answer { flex: 1; padding: 12px 16px; color: var(--text-dark); line-height: 1.55; background: var(--white); }
+
+  /* ── LIMITATION CARDS ── */
+  .limit-card {
+    background: var(--card-bg); border: 1px solid var(--border-light);
+    border-radius: 10px; padding: 18px 20px;
+    border-left: 4px solid var(--tulane-green);
+    box-shadow: 0 2px 8px rgba(40,92,77,0.05);
+  }
+  .limit-card h4 { font-size: 1rem; color: var(--tulane-green); font-weight: 700; margin-bottom: 7px; }
+  .limit-card p { font-size: 0.93rem; color: var(--text-dark); margin: 0; line-height: 1.6; }
+
+  /* ── RESOURCE BOX ── */
+  .resource-box {
+    background: var(--card-bg); border: 1px solid var(--border-light);
+    border-radius: 10px; padding: 18px 22px;
+    border-left: 4px solid var(--tulane-blue);
+    box-shadow: 0 2px 8px rgba(40,92,77,0.05);
+    margin-bottom: 12px;
+  }
+  .resource-box h4 { font-size: 1rem; font-weight: 700; color: var(--tulane-green-dark); margin-bottom: 4px; }
+  .resource-box .url { font-size: 0.88rem; color: var(--storm-shutters); font-style: italic; margin-bottom: 5px; }
+  .resource-box p { font-size: 0.93rem; color: var(--text-mid); margin: 0; }
+
+  /* ── DMPTOOL FEATURE BOX ── */
+  .dmp-box {
+    background: var(--tulane-green); border-radius: 14px; padding: 30px 34px; color: var(--white);
+  }
+  .dmp-box h3 { font-size: 1.8rem; color: var(--tulane-blue); margin-bottom: 4px; }
+  .dmp-box .dmp-url { font-size: 0.95rem; color: rgba(255,255,255,0.7); font-style: italic; margin-bottom: 20px; }
+  .dmp-point {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 10px; font-size: 0.97rem; line-height: 1.55;
+  }
+  .dmp-check { color: var(--tulane-blue); font-weight: 800; font-size: 1.1rem; flex-shrink: 0; }
+
+  /* ── ACTIVITY SECTION ── */
+  .activity-box {
+    background: linear-gradient(135deg, var(--blue-tint), #dff1fa);
+    border: 2px solid var(--tulane-blue);
+    border-radius: 14px; padding: 28px 32px; margin-top: 28px;
+  }
+  .activity-box h3 {
+    font-size: 1.2rem; font-weight: 700; color: var(--storm-shutters);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .activity-label {
+    background: var(--storm-shutters); color: var(--white);
+    padding: 3px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;
+  }
+  .activity-box textarea {
+    width: 100%; min-height: 90px; padding: 12px 14px;
+    border: 1px solid var(--tulane-blue); border-radius: 8px;
+    font-family: inherit; font-size: 0.97rem; color: var(--text-dark);
+    resize: vertical; background: var(--white);
+    transition: border-color 0.2s;
+  }
+  .activity-box textarea:focus { outline: none; border-color: var(--storm-shutters); }
+  .activity-prompt { font-size: 0.97rem; color: var(--text-dark); margin-bottom: 12px; line-height: 1.65; }
+  .save-btn {
+    margin-top: 10px; background: var(--storm-shutters); color: var(--white);
+    border: none; padding: 9px 22px; border-radius: 8px;
+    font-size: 0.92rem; font-weight: 700; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .save-btn:hover { background: var(--tulane-green); }
+  .saved-msg { display: none; color: var(--tulane-green); font-weight: 700; font-size: 0.9rem; margin-left: 12px; }
+
+  /* ── CLOSING SLIDE ── */
+  .closing-slide {
+    background: linear-gradient(135deg, var(--tulane-green) 0%, var(--tulane-green-light) 100%);
+    min-height: calc(100vh - 70px);
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 60px 80px; position: relative; overflow: hidden;
+  }
+  .closing-slide::before {
+    content: ''; position: absolute; bottom: -100px; right: -60px;
+    width: 380px; height: 380px;
+    background: rgba(113,197,232,0.1); border-radius: 50%;
+  }
+  .closing-slide h2 { font-size: 2.8rem; color: var(--white); margin-bottom: 14px; }
+  .closing-slide .tagline { font-size: 1.25rem; color: var(--tulane-blue); margin-bottom: 36px; }
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 700px; }
+  .contact-item {
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 10px; padding: 16px 20px; color: var(--white);
+  }
+  .contact-item .contact-label { font-size: 0.78rem; color: var(--tulane-blue); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .contact-item .contact-val { font-size: 0.97rem; font-weight: 600; }
+  .closing-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.2); padding: 14px 80px;
+    display: flex; justify-content: space-between;
+  }
+  .closing-footer span { color: rgba(255,255,255,0.65); font-size: 0.88rem; }
+
+  /* ── PRINT ── */
+  @media print {
+    .nav-container { display: none; }
+    .slide-container { padding-top: 0; }
+    .slide { display: block !important; page-break-after: always; }
+    .activity-box textarea { min-height: 60px; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 820px) {
+    .two-col, .three-col, .four-col { grid-template-columns: 1fr; }
+    .content-slide { padding: 28px 22px; margin: 16px; }
+    .title-slide { padding: 40px 28px; }
+    .title-slide h1 { font-size: 2.1rem; }
+    .page-selector { min-width: 200px; }
+    .timeline { flex-direction: column; gap: 18px; }
+    .step:not(:last-child)::after { display: none; }
+    .contact-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV BAR ── -->
+<nav class="nav-container">
+  <div class="nav-title">📊 NIH Data Management &amp; Sharing Plan</div>
+  <div class="nav-controls">
+    <select class="page-selector" onchange="showSlide(parseInt(this.value))">
+      <option value="0">1. Welcome &amp; Overview</option>
+      <option value="1">2. Learning Objectives</option>
+      <option value="2">3. What Is the DMS Policy?</option>
+      <option value="3">4. Who Must Comply?</option>
+      <option value="4">5. Defining Scientific Data</option>
+      <option value="5">6. Original DMSP Elements (2023)</option>
+      <option value="6">7. 2026 Format Update</option>
+      <option value="7">8. FAIR Data Principles</option>
+      <option value="8">9. Choosing a Repository</option>
+      <option value="9">10. Human Subjects Data</option>
+      <option value="10">11. Budgeting for DMS</option>
+      <option value="11">12. Compliance &amp; Reporting</option>
+      <option value="12">13. Sample Plan Walk-Through</option>
+      <option value="13">14. Justifiable Limitations</option>
+      <option value="14">15. Tools &amp; Resources</option>
+      <option value="15">16. Checklist &amp; Next Steps</option>
+      <option value="16">17. Questions &amp; Contact</option>
+    </select>
+    <button class="nav-btn" onclick="changeSlide(-1)" id="prevBtn">← Prev</button>
+    <span class="page-indicator" id="pageIndicator">1 / 17</span>
+    <button class="nav-btn" onclick="changeSlide(1)" id="nextBtn">Next →</button>
+    <span class="activity-tracker" id="activityTracker">✏️ 0 / 4 Activities</span>
+  </div>
+</nav>
+
+<div class="slide-container">
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+══════════════════════════════════════════════════ -->
+<div class="slide active">
+  <div class="title-slide">
+    <div class="title-eyebrow">Research Data Services · Howard-Tilton Memorial Library</div>
+    <h1>NIH Data Management<br>&amp; <span>Sharing Plan</span></h1>
+    <p class="title-subtitle">Understanding the 2023 Policy Requirements and the 2026 Format Update (NOT-OD-26-046)</p>
+    <div class="title-badges">
+      <span class="title-badge">📅 Effective Jan 25, 2023</span>
+      <span class="title-badge">⚡ Format Update May 25, 2026</span>
+      <span class="title-badge">🏛️ Tulane University · 2026</span>
+    </div>
+    <div class="title-footer">
+      <span>Howard-Tilton Memorial Library · Tulane University</span>
+      <span>Use arrow keys or the menu above to navigate</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 2 — LEARNING OBJECTIVES
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Learning Objectives</h2>
+      <div class="subhead">By the end of this session, you will be able to:</div>
+    </div>
+    <div class="objective-row"><span class="objective-verb">Explain</span> what the NIH Data Management and Sharing (DMS) Policy requires and who it applies to</div>
+    <div class="objective-row"><span class="objective-verb">Identify</span> the required elements of a DMS Plan (DMSP) under the 2023 policy</div>
+    <div class="objective-row"><span class="objective-verb">Recognize</span> the 2026 format update (NOT-OD-26-046) effective May 25, 2026 and how it changes the plan structure</div>
+    <div class="objective-row"><span class="objective-verb">Apply</span> FAIR data principles when planning your data management strategy</div>
+    <div class="objective-row"><span class="objective-verb">Select</span> an appropriate repository for your data type</div>
+    <div class="objective-row"><span class="objective-verb">Locate</span> tools and resources — including library support — to help you write a compliant and effective plan</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 3 — WHAT IS THE DMS POLICY?
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>What Is the NIH DMS Policy?</h2>
+      <div class="subhead">A major expansion of data sharing requirements effective January 25, 2023</div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>The NIH Policy for Data Management and Sharing (DMS Policy)</strong> requires all NIH-funded or conducted research that generates <strong>scientific data</strong> to include a formal plan for how that data will be managed and shared. The plan must be submitted as part of the grant application and becomes a binding term and condition of any award.
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-num">Jan 25, 2023</div>
+        <div class="stat-label">Policy effective date — applies to all competing applications submitted on or after this date</div>
+      </div>
+      <div class="stat-box blue">
+        <div class="stat-num">All Funding Levels</div>
+        <div class="stat-label">Previous 2003 policy only required plans for grants with $500,000+ in direct costs per year</div>
+      </div>
+    </div>
+
+    <div class="highlight-box gold">
+      <strong>⚡ 2026 Update:</strong> NIH issued NOT-OD-26-046 on February 25, 2026, updating the required format of the DMSP. The updated format is required for applications with due dates on or after <strong>May 25, 2026</strong>. The underlying 2023 policy remains unchanged — only the plan format is updated.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 4 — WHO MUST COMPLY?
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Who Must Comply?</h2>
+      <div class="subhead">The DMS Policy applies broadly — but not universally. Check your activity code.</div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <h3 style="color:var(--tulane-green); margin-bottom:14px; font-size:1.1rem;">✅ Covered mechanisms</h3>
+        <div class="card green-top" style="margin-bottom:10px;">
+          <h3>Research Grants</h3>
+          <p>All R-series grants (R01, R21, R03, R15, R34, etc.) and competing renewals that generate scientific data</p>
+        </div>
+        <div class="card green-top" style="margin-bottom:10px;">
+          <h3>Cooperative Agreements</h3>
+          <p>All U-mechanism grants that result in the generation of scientific data</p>
+        </div>
+        <div class="card green-top" style="margin-bottom:10px;">
+          <h3>Career Development Awards</h3>
+          <p>Some K-series awards — check the specific FOA for your mechanism</p>
+        </div>
+        <div class="card green-top">
+          <h3>SBIR / STTR Grants</h3>
+          <p>Small business innovation grants — with some exceptions for proprietary data (may withhold up to 20 years)</p>
+        </div>
+      </div>
+      <div>
+        <h3 style="color:#c0392b; margin-bottom:14px; font-size:1.1rem;">❌ Not covered</h3>
+        <div class="card" style="border-left:4px solid #e74c3c; margin-bottom:10px;">
+          <h3 style="color:#c0392b;">Training (T) Grants</h3>
+          <p>Fellowship and training mechanisms — data generation is not the primary purpose</p>
+        </div>
+        <div class="card" style="border-left:4px solid #e74c3c; margin-bottom:10px;">
+          <h3 style="color:#c0392b;">Fellowships (F)</h3>
+          <p>Individual fellowship awards are not covered under the DMS Policy</p>
+        </div>
+        <div class="card" style="border-left:4px solid #e74c3c; margin-bottom:10px;">
+          <h3 style="color:#c0392b;">Construction (C06) &amp; Infrastructure (S06)</h3>
+          <p>Infrastructure and construction grants that don't generate scientific data</p>
+        </div>
+        <div class="card" style="border-left:4px solid #e74c3c;">
+          <h3 style="color:#c0392b;">Conference Grants (R13)</h3>
+          <p>Conference and resource grants not generating scientific data</p>
+        </div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:22px;">
+      💡 <strong>When in doubt:</strong> Check the NIH Grants Policy Statement §8.2.3.1 or the specific Funding Opportunity Announcement (FOA) — some ICOs have additional requirements.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 5 — DEFINING SCIENTIFIC DATA
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Defining "Scientific Data"</h2>
+      <div class="subhead">The policy applies only to scientific data — not everything your lab produces</div>
+    </div>
+
+    <div class="highlight-box">
+      <strong>Official NIH Definition:</strong> "The recorded factual material commonly accepted in the scientific community as of sufficient quality to <strong>validate and replicate research findings</strong>, regardless of whether the data are used to support scholarly publications."
+    </div>
+
+    <div class="two-col" style="margin-top:22px;">
+      <div class="card green-top">
+        <h3>✅ IS Scientific Data</h3>
+        <ul>
+          <li>Processed datasets used to support published conclusions</li>
+          <li>Survey responses (when de-identified)</li>
+          <li>Genomic sequences, imaging data, clinical measurements</li>
+          <li>Code or software needed to reproduce research findings</li>
+          <li>Metadata accompanying shared data files</li>
+          <li>Transcripts or qualitative data files (appropriately de-identified)</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:4px solid #e74c3c;">
+        <h3 style="color:#c0392b;">❌ NOT Scientific Data</h3>
+        <ul>
+          <li>Laboratory notebooks and preliminary analyses</li>
+          <li>Completed case report forms</li>
+          <li>Drafts of scientific papers and grant applications</li>
+          <li>Plans for future research</li>
+          <li>Peer reviews and colleague communications</li>
+          <li>Physical objects (specimens, slides, tissue)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="highlight-box blue" style="margin-top:20px;">
+      💡 <strong>Practical test:</strong> If you wouldn't share it to allow another researcher to replicate your findings, it probably doesn't qualify as scientific data under this policy.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 6 — ORIGINAL DMSP ELEMENTS
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Original DMSP Elements (NOT-OD-21-014)</h2>
+      <div class="subhead">The six narrative elements required under the 2023 policy — 2 pages or fewer. These remain the standard until May 25, 2026.</div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+      <div class="element-card">
+        <div class="element-num">1</div>
+        <div class="element-body">
+          <h4>Data Type</h4>
+          <p>Describe the types, formats, and estimated amount of data to be generated. Include preservation and access needs for each data type.</p>
+        </div>
+      </div>
+      <div class="element-card">
+        <div class="element-num">2</div>
+        <div class="element-body">
+          <h4>Related Tools, Software &amp; Code</h4>
+          <p>Note any tools, software, or code needed to access or manipulate shared data. Describe how these will be shared if necessary.</p>
+        </div>
+      </div>
+      <div class="element-card">
+        <div class="element-num">3</div>
+        <div class="element-body">
+          <h4>Standards</h4>
+          <p>Identify metadata standards, data dictionaries, and identifiers to be applied. If no standard exists for your field, state that clearly.</p>
+        </div>
+      </div>
+      <div class="element-card">
+        <div class="element-num">4</div>
+        <div class="element-body">
+          <h4>Data Preservation, Access &amp; Timeline</h4>
+          <p>Specify where data will be deposited, when it will be made available, and how long it will be preserved. Describe access procedures.</p>
+        </div>
+      </div>
+      <div class="element-card">
+        <div class="element-num">5</div>
+        <div class="element-body">
+          <h4>Access, Distribution &amp; Reuse</h4>
+          <p>Describe any protections, licenses (e.g., CC0, CC-BY), or access controls applied to shared data. For human subjects data, address consent.</p>
+        </div>
+      </div>
+      <div class="element-card">
+        <div class="element-num">6</div>
+        <div class="element-body">
+          <h4>Oversight of DMS</h4>
+          <p>Name who at your institution (by title or role) will monitor compliance with the plan, how frequently, and by what methods.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top:20px;">
+      📝 <strong>Format:</strong> Submitted as a single PDF in the "Other Plan(s)" field of NIH FORMS-H. The plan is assessed by NIH Program Staff — not scored in peer review (unless specifically noted in the FOA).
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 7 — 2026 FORMAT UPDATE
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>2026 Format Update: NOT-OD-26-046</h2>
+      <div class="subhead">Required for applications with due dates on or after May 25, 2026 — shifts from narrative elements to structured Yes/No questions</div>
+    </div>
+
+    <div class="highlight-box gold">
+      ⚡ <strong>What changed:</strong> After reviewing over 1,100 DMSP submissions, NIH found many plans included unnecessary detail and exceeded the 2-page limit. The new format uses structured Yes/No questions with explanations required only when the answer is "No" or when sharing will be limited.
+    </div>
+
+    <div style="margin-top:20px;">
+      <div class="q-row">
+        <div class="q-num">Q1</div>
+        <div class="q-text">Will there be <strong>maximum appropriate sharing</strong> of scientific data underlying peer-reviewed publications and other findings?</div>
+        <div class="q-type">YES / NO</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q2</div>
+        <div class="q-text">Will the scientific data underlying peer-reviewed publications be shared <strong>by the time of publication</strong>, or by the end of the performance period?</div>
+        <div class="q-type">YES / NO</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q3</div>
+        <div class="q-text">Will shared scientific data be made available for <strong>at least as long as required</strong> by applicable data repository and/or journal policies?</div>
+        <div class="q-type">YES / NO</div>
+      </div>
+      <div class="q-row gold-q">
+        <div class="q-num">Q4</div>
+        <div class="q-text">If you answered "No" to Q1, Q2, or Q3 — or if sharing will be limited for any reason — describe the <strong>ethical, legal, or technical factors</strong>. Specify a particular reason. <em>(300-word maximum)</em></div>
+        <div class="q-type">EXPLAIN IF NO</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q5</div>
+        <div class="q-text">If scientific data from <strong>human research participants</strong> will be shared — will privacy, rights, and confidentiality be protected (per NOT-OD-22-213), including use of access controls?</div>
+        <div class="q-type">YES / NO / N/A</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q6</div>
+        <div class="q-text">In a <strong>table</strong>: list key data types expected to be generated (including species and modality if known) and the repository where data may be managed and shared. <em>(100-word maximum)</em></div>
+        <div class="q-type">TABLE</div>
+      </div>
+      <div class="q-row">
+        <div class="q-num">Q7</div>
+        <div class="q-text">For studies subject to the <strong>NIH Genomic Data Sharing (GDS) Policy</strong>: will you share large-scale human genomic data in a NIH-designated repository per accelerated GDS timelines?</div>
+        <div class="q-type">YES / NO / N/A</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 8 — FAIR PRINCIPLES
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>FAIR Data Principles</h2>
+      <div class="subhead">The philosophical foundation of the NIH DMS Policy — NIH encourages practices consistent with FAIR</div>
+    </div>
+
+    <p>FAIR stands for <strong>Findable, Accessible, Interoperable,</strong> and <strong>Reusable</strong>. These principles, developed by Wilkinson et al. (2016), guide how data should be structured and shared to maximize their value to the research community.</p>
+
+    <div class="four-col" style="margin-top:20px;">
+      <div class="fair-card">
+        <div class="fair-header" style="background: var(--tulane-green);">
+          <div class="fair-letter">F</div>
+          <div class="fair-word">Findable</div>
+        </div>
+        <div class="fair-body">
+          <ul>
+            <li>Assign a persistent, unique identifier (DOI, accession number)</li>
+            <li>Use rich, searchable metadata</li>
+            <li>Register data in an indexed repository</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fair-card">
+        <div class="fair-header" style="background: var(--storm-shutters);">
+          <div class="fair-letter">A</div>
+          <div class="fair-word">Accessible</div>
+        </div>
+        <div class="fair-body">
+          <ul>
+            <li>Data retrievable by identifier using standard protocols (HTTPS, SPARQL)</li>
+            <li>Metadata remain accessible even if data is restricted</li>
+            <li>Authentication and authorization clearly defined</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fair-card">
+        <div class="fair-header" style="background: var(--tulane-green-light);">
+          <div class="fair-letter">I</div>
+          <div class="fair-word">Interoperable</div>
+        </div>
+        <div class="fair-body">
+          <ul>
+            <li>Use community-accepted data formats and standards</li>
+            <li>Include controlled vocabularies or ontologies in metadata</li>
+            <li>Enable integration with other datasets</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fair-card">
+        <div class="fair-header" style="background: var(--tulane-green-dark);">
+          <div class="fair-letter">R</div>
+          <div class="fair-word">Reusable</div>
+        </div>
+        <div class="fair-body">
+          <ul>
+            <li>Clear, accessible data usage license (CC0, CC-BY)</li>
+            <li>Detailed provenance and documentation for secondary use</li>
+            <li>Meets community standards for your research domain</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-box">
+      <h3>✏️ Activity 1 <span class="activity-label">FAIR Self-Check</span></h3>
+      <p class="activity-prompt">Think about a recent dataset from your research (or a dataset type you expect to generate). For each FAIR principle, jot one concrete step you could take to make that data more FAIR before sharing.</p>
+      <textarea id="act1" placeholder="F — Findable: e.g., I could assign a DOI via Zenodo...&#10;A — Accessible: ...&#10;I — Interoperable: ...&#10;R — Reusable: ..." oninput="updateTracker()"></textarea>
+      <button class="save-btn" onclick="saveActivity('act1')">Save Response</button>
+      <span class="saved-msg" id="act1-saved">✓ Saved!</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 9 — CHOOSING A REPOSITORY
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Choosing a Data Repository</h2>
+      <div class="subhead">NIH strongly encourages use of established repositories — addressed directly in Q6 of the new format</div>
+    </div>
+
+    <p>NIH expects researchers to deposit data in established repositories that support long-term preservation and public (or controlled) access. The policy prefers <strong>domain-specific repositories</strong> when they exist.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Repository Type</th>
+          <th>Examples</th>
+          <th>Best For</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>NIH-Designated</strong></td>
+          <td>dbGaP, GEO, ImmPort, NCBI SRA, ClinicalTrials.gov</td>
+          <td>Genomics, clinical trials, immunology, sequence data</td>
+        </tr>
+        <tr>
+          <td><strong>Domain-Specific (non-NIH)</strong></td>
+          <td>ICPSR, OpenNeuro, UK Data Service, OSF</td>
+          <td>Social science, neuroscience, survey and qualitative data</td>
+        </tr>
+        <tr>
+          <td><strong>Generalist Repositories</strong></td>
+          <td>Zenodo, Figshare, Dryad</td>
+          <td>Data types without a dedicated domain-specific home</td>
+        </tr>
+        <tr>
+          <td><strong>NIH-Supported Institutional</strong></td>
+          <td>NIMH Data Archive, NDA, LONI</td>
+          <td>Neuroimaging, developmental, and behavioral data</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="three-col" style="margin-top:20px;">
+      <div class="card green-top" style="text-align:center;">
+        <div style="font-size:1.8rem; margin-bottom:8px;">🔓</div>
+        <h3>Free &amp; Open Access</h3>
+        <p style="font-size:0.9rem;">Repository must provide public access at no cost to end users</p>
+      </div>
+      <div class="card blue-top" style="text-align:center;">
+        <div style="font-size:1.8rem; margin-bottom:8px;">🆔</div>
+        <h3>Persistent Identifier</h3>
+        <p style="font-size:0.9rem;">Must assign DOIs or accession numbers for long-term citability</p>
+      </div>
+      <div class="card teal-top" style="text-align:center;">
+        <div style="font-size:1.8rem; margin-bottom:8px;">📦</div>
+        <h3>Long-Term Preservation</h3>
+        <p style="font-size:0.9rem;">Must support data availability for as long as repository/journal policies require</p>
+      </div>
+    </div>
+
+    <div class="highlight-box blue" style="margin-top:20px;">
+      🔗 <strong>NIH Repository Finder:</strong> <a href="https://sharing.nih.gov/data-management-and-sharing-policy/sharing-scientific-data/selecting-a-data-repository" target="_blank" style="color:var(--storm-shutters);">sharing.nih.gov → Selecting a Data Repository</a> — Library staff can help you select the right repository for your data type.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 10 — HUMAN SUBJECTS DATA
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Sharing Data from Human Research Participants</h2>
+      <div class="subhead">Extra considerations required in Q5 of the 2026 format — addressed in Element 5 of the original format</div>
+    </div>
+
+    <p>When your research involves human subjects, the DMSP must specifically describe how participant <strong>privacy, rights, and confidentiality</strong> will be protected throughout data management and sharing.</p>
+
+    <div class="two-col" style="margin-top:20px;">
+      <div class="limit-card">
+        <h4>📋 Informed Consent Language</h4>
+        <p>Consent forms should anticipate future data sharing. Include language about data being deposited in a public or controlled-access repository. IRBs and consent forms developed before 2023 may need revision for ongoing studies.</p>
+      </div>
+      <div class="limit-card" style="border-left-color:var(--storm-shutters);">
+        <h4>🔒 De-identification Requirements</h4>
+        <p>Data shared publicly must be de-identified per <strong>HIPAA Safe Harbor</strong> or Expert Determination standards. NIH Certificates of Confidentiality can provide additional protections for sensitive research.</p>
+      </div>
+      <div class="limit-card" style="border-left-color:var(--tulane-blue);">
+        <h4>🗄️ Controlled Access Options</h4>
+        <p>Sensitive data (genomic, clinical, mental health) may be deposited in controlled-access repositories such as <strong>dbGaP</strong> rather than open-access repositories, preserving both sharing and privacy.</p>
+      </div>
+      <div class="limit-card" style="border-left-color:var(--medallion);">
+        <h4>📝 Document Justifiable Limitations</h4>
+        <p>If full sharing is not possible due to consent or privacy constraints, document this clearly in Q4 (new format) or Element 5 (original format). A compelling rationale assessed by NIH is required.</p>
+      </div>
+    </div>
+
+    <div class="activity-box">
+      <h3>✏️ Activity 2 <span class="activity-label">Human Subjects Check</span></h3>
+      <p class="activity-prompt">Does your research involve human participants? If yes: (1) Does your current consent language anticipate data sharing? (2) What is your plan for de-identification or controlled access? If no: briefly describe your data type and any privacy considerations that might still apply.</p>
+      <textarea id="act2" placeholder="My research involves / does not involve human participants because...&#10;My plan for participant protections is..." oninput="updateTracker()"></textarea>
+      <button class="save-btn" onclick="saveActivity('act2')">Save Response</button>
+      <span class="saved-msg" id="act2-saved">✓ Saved!</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 11 — BUDGETING FOR DMS
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Budgeting for Data Management &amp; Sharing</h2>
+      <div class="subhead">Allowable costs can be requested across standard budget categories — no single DMS line item required as of Oct. 5, 2023</div>
+    </div>
+
+    <p>The DMS Policy explicitly allows NIH applicants to request funds for data management and sharing activities. Reasonable and allocable costs directly related to implementing the approved DMSP are allowable.</p>
+
+    <div class="two-col" style="margin-top:18px;">
+      <div class="card green-top">
+        <h3>👩‍💻 Personnel</h3>
+        <p>Staff time for data curation, documentation, quality control, de-identification, and repository deposit — including research coordinator or data manager roles</p>
+      </div>
+      <div class="card green-top">
+        <h3>🔬 Consultant Services</h3>
+        <p>Biostatistician, data manager, bioinformatician, or informatics specialist for data formatting and standards compliance</p>
+      </div>
+      <div class="card blue-top">
+        <h3>💻 Computer Services</h3>
+        <p>Repository submission fees, cloud storage costs, secure data transfer, computing time for data processing before deposit</p>
+      </div>
+      <div class="card blue-top">
+        <h3>🖥️ Equipment</h3>
+        <p>Hardware or storage systems needed specifically for data management activities described in the DMSP</p>
+      </div>
+      <div class="card teal-top">
+        <h3>📄 Formatting &amp; Documentation</h3>
+        <p>Converting data to community-accepted standards; creating data dictionaries, README files, codebooks, and metadata documentation</p>
+      </div>
+      <div class="card teal-top">
+        <h3>🏛️ Local Infrastructure</h3>
+        <p>Institutional data management platforms with associated costs — such as REDCap or institutional cloud storage — when needed for secure local management</p>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top:18px;">
+      💡 <strong>Tip:</strong> Use the <strong>NIH DMS Cost Estimation Tool</strong> (available at grants.nih.gov) to build a justified budget narrative. Your DMS budget justification must align precisely with the activities described in your DMSP.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 12 — COMPLIANCE & REPORTING
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Compliance &amp; Reporting Requirements</h2>
+      <div class="subhead">Your approved DMSP becomes a Term and Condition of your award — non-compliance has consequences</div>
+    </div>
+
+    <div class="timeline">
+      <div class="step">
+        <div class="step-icon">📝</div>
+        <div class="step-label">Submit</div>
+        <div class="step-desc">DMSP as single PDF in "Other Plan(s)" field of NIH FORMS-H</div>
+      </div>
+      <div class="step">
+        <div class="step-icon">🔍</div>
+        <div class="step-label">Review</div>
+        <div class="step-desc">Assessed by NIH Program Staff (not scored in peer review)</div>
+      </div>
+      <div class="step">
+        <div class="step-icon">✅</div>
+        <div class="step-label">Approval</div>
+        <div class="step-desc">ICO-approved plan becomes a Term &amp; Condition of the award</div>
+      </div>
+      <div class="step">
+        <div class="step-icon">⚙️</div>
+        <div class="step-label">Implement</div>
+        <div class="step-desc">Comply throughout award period; update with NIH approval if plans change</div>
+      </div>
+      <div class="step">
+        <div class="step-icon">📊</div>
+        <div class="step-label">Report</div>
+        <div class="step-desc">Annual RPPRs must include DMS compliance — required as of Oct. 1, 2024</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top:24px;">
+      <div class="highlight-box" style="margin:0;">
+        📋 <strong>Modifying Your Plan:</strong> If data management or sharing activities change significantly (e.g., different repository, additional data limitations), submit a revised DMSP for NIH approval via the Prior Approval Module in eRA Commons. Changes must be submitted 30 days in advance by your OSP grants officer. See NOT-OD-24-176.
+      </div>
+      <div class="highlight-box red" style="margin:0;">
+        ⚠️ <strong>Non-Compliance Consequences:</strong> May result in special terms and conditions added to the award, restrictions on future NIH funding, or other enforcement actions from NIH. Compliance is monitored through annual RPPRs and may be audited.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 13 — SAMPLE PLAN WALK-THROUGH
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Sample DMSP Walk-Through (New 2026 Format)</h2>
+      <div class="subhead">Example: NIH R01 — health disparities study with survey and de-identified clinical data</div>
+    </div>
+
+    <p>Here is how a researcher would complete each question in the new structured format:</p>
+
+    <div style="margin-top:16px;">
+      <div class="sample-row">
+        <div class="sample-q">Q1 — Maximum sharing?</div>
+        <div class="sample-badge badge-yes">YES</div>
+        <div class="sample-answer">Survey and de-identified clinical data will be deposited in ICPSR with open access following de-identification per HIPAA Safe Harbor standards.</div>
+      </div>
+      <div class="sample-row">
+        <div class="sample-q">Q2 — Shared by publication/end of period?</div>
+        <div class="sample-badge badge-yes">YES</div>
+        <div class="sample-answer">Repository deposit planned upon manuscript acceptance. All datasets will be fully available no later than the project end date.</div>
+      </div>
+      <div class="sample-row">
+        <div class="sample-q">Q3 — Available long-term?</div>
+        <div class="sample-badge badge-yes">YES</div>
+        <div class="sample-answer">ICPSR provides 25+ year preservation with DataCite DOIs per institutional repository policy.</div>
+      </div>
+      <div class="sample-row">
+        <div class="sample-q">Q4 — Any limitations?</div>
+        <div class="sample-badge badge-na">N/A</div>
+        <div class="sample-answer">No limitations on sharing are anticipated. All data will be de-identified before deposit.</div>
+      </div>
+      <div class="sample-row">
+        <div class="sample-q">Q5 — Human participant protections?</div>
+        <div class="sample-badge badge-yes">YES</div>
+        <div class="sample-answer">Data de-identified per HIPAA Safe Harbor; consent forms include NIH-compliant data sharing language; no access controls needed for de-identified open data.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <strong style="color:var(--tulane-green); font-size:1rem;">Q6 — Data types &amp; repositories (table):</strong>
+      <table style="margin-top:8px;">
+        <thead>
+          <tr><th>Expected Data Type</th><th>Established Repository</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>De-identified survey data (human participants)</td><td>ICPSR — icpsr.umich.edu</td></tr>
+          <tr><td>De-identified clinical measurements (human participants)</td><td>ICPSR or Zenodo (generalist)</td></tr>
+          <tr><td>Analysis code (R scripts)</td><td>OSF or GitHub + Zenodo DOI</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="activity-box">
+      <h3>✏️ Activity 3 <span class="activity-label">Draft Your Q6 Table</span></h3>
+      <p class="activity-prompt">Using the new format, draft your own Q6 table. List the key data types you expect to generate in your research and identify a candidate repository for each. Note the species and modality if applicable (e.g., "human survey data," "mouse RNA-seq data").</p>
+      <textarea id="act3" placeholder="Data Type | Repository&#10;----------------------------------------&#10;e.g., Human survey data | ICPSR&#10;e.g., Mouse imaging data | OpenNeuro&#10;..." oninput="updateTracker()"></textarea>
+      <button class="save-btn" onclick="saveActivity('act3')">Save Response</button>
+      <span class="saved-msg" id="act3-saved">✓ Saved!</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 14 — JUSTIFIABLE LIMITATIONS
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>When Sharing Is Limited: Justifiable Factors</h2>
+      <div class="subhead">Q4 of the 2026 format — 300-word maximum for explaining limitations. A compelling rationale will be assessed by NIH.</div>
+    </div>
+
+    <p>NIH expects researchers to maximize data sharing, but acknowledges that certain factors may necessitate limiting sharing. <strong>Foreseeable limitations must be described proactively</strong> in the DMSP with a clear, specific rationale.</p>
+
+    <div class="two-col" style="margin-top:18px;">
+      <div class="limit-card">
+        <h4>👥 Informed Consent</h4>
+        <p>Consent does not permit future sharing, or limits the scope, type, or future research uses of the data. This includes existing consent for previously collected biospecimens.</p>
+      </div>
+      <div class="limit-card" style="border-left-color:var(--storm-shutters);">
+        <h4>🔒 Privacy &amp; Safety</h4>
+        <p>Sharing would compromise participant privacy or place them at unacceptable re-identification risk — even after de-identification. Certificates of Confidentiality may not be sufficient.</p>
+      </div>
+      <div class="limit-card" style="border-left-color:var(--medallion);">
+        <h4>⚖️ Legal Restrictions</h4>
+        <p>Federal, state, local, or Tribal law, regulation, or policy explicitly prohibits data disclosure. This includes FERPA for student records and certain state privacy laws.</p>
+      </div>
+      <div class="limit-card" style="border-left-color:var(--tulane-blue);">
+        <h4>📄 Third-Party Agreements</h4>
+        <p>Existing agreements with co-funders, industry partners, repositories, or data providers restrict or prohibit sharing. Discuss with collaborators early to avoid unnecessary restrictions.</p>
+      </div>
+      <div class="limit-card" style="border-left-color:var(--tulane-green-light);">
+        <h4>🧪 Data Quality</h4>
+        <p>Data do not meet the quality standards sufficient to validate and replicate research findings, and sharing would create a risk of misinformation or misuse.</p>
+      </div>
+      <div class="limit-card" style="border-left-color:var(--text-mid);">
+        <h4>💾 Technical Barriers</h4>
+        <p>File sizes, proprietary formats, or specialized infrastructure requirements make data sharing technically infeasible within the award period.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box gold" style="margin-top:20px;">
+      ⚡ <strong>Important:</strong> "We don't want to share" or "the data are valuable" are not justifiable reasons. NIH staff will evaluate the rationale and may request revisions. State the <em>specific</em> reason with reference to the relevant law, consent language, or agreement.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 15 — TOOLS & RESOURCES
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>Tools &amp; Resources</h2>
+      <div class="subhead">You don't have to start from scratch — these resources will help</div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="dmp-box">
+          <h3>DMPTool</h3>
+          <div class="dmp-url">dmptool.org — sign in with your Tulane email (SSO)</div>
+          <div class="dmp-point"><span class="dmp-check">✔</span> Step-by-step wizard with NIH-specific template</div>
+          <div class="dmp-point"><span class="dmp-check">✔</span> Updated to reflect new 2026 format (coming soon)</div>
+          <div class="dmp-point"><span class="dmp-check">✔</span> Guidance text for each required element</div>
+          <div class="dmp-point"><span class="dmp-check">✔</span> Share draft with library staff for feedback before submission</div>
+          <div class="dmp-point"><span class="dmp-check">✔</span> Save and return — plans persist across sessions</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="resource-box">
+          <h4>NIH Scientific Data Sharing Site</h4>
+          <div class="url">sharing.nih.gov</div>
+          <p>Official policy text, FAQs, sample plans, NIH repository finder, and implementation guidance</p>
+        </div>
+        <div class="resource-box">
+          <h4>NIH Sample DMS Plans</h4>
+          <div class="url">grants.nih.gov — search "sample DMS plans"</div>
+          <p>5 official NIH example plans across R01, R21, K23, and other mechanisms — excellent models for drafting your own</p>
+        </div>
+        <div class="resource-box">
+          <h4>Howard-Tilton Library — Research Data Services</h4>
+          <div class="url">library.tulane.edu</div>
+          <p>1-on-1 DMSP consultations, plan review before submission, library instruction, and repository selection support</p>
+        </div>
+        <div class="resource-box">
+          <h4>NOT-OD-26-046 — 2026 Format Update</h4>
+          <div class="url">grants.nih.gov/grants/guide/notice-files/NOT-OD-26-046.html</div>
+          <p>Official NIH notice, effective May 25, 2026. Includes draft of new format page (OMB clearance pending)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 16 — CHECKLIST
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="content-slide">
+    <div class="slide-header">
+      <h2>DMSP Quick-Reference Checklist</h2>
+      <div class="subhead">Click each item to mark it complete — use this before submitting your application</div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="checklist-section">
+          <h3>📋 Scope &amp; Applicability</h3>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Confirmed my activity code is covered by the DMS Policy</div>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Checked FOA for any additional ICO-specific requirements</div>
+        </div>
+
+        <div class="checklist-section">
+          <h3>📝 Plan Content — New Format (May 25, 2026+)</h3>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Answered Q1–Q3 with YES or documented limitations in Q4 (≤300 words)</div>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Addressed participant privacy protections in Q5 (if human subjects)</div>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Completed the data type/repository table in Q6 (≤100 words)</div>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Addressed Genomic Data Sharing requirements in Q7 (if applicable)</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="checklist-section">
+          <h3>🗄️ Repository &amp; Standards</h3>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Identified an established, NIH-recognized repository for each data type</div>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Planned for FAIR-compliant metadata and documentation</div>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Confirmed data will be available by time of publication or project end</div>
+        </div>
+
+        <div class="checklist-section">
+          <h3>💰 Budget &amp; Oversight</h3>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Included allowable DMS costs in appropriate budget categories</div>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Named an institutional role responsible for compliance oversight</div>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Plan is 2 pages or fewer and saved as a single PDF</div>
+          <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"> Budget narrative aligns precisely with DMSP activities</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="activity-box" style="margin-top:22px;">
+      <h3>✏️ Activity 4 <span class="activity-label">Reflection</span></h3>
+      <p class="activity-prompt">What is the single most challenging aspect of the NIH DMSP requirements for your specific research project? What is your next concrete step toward writing or improving your plan?</p>
+      <textarea id="act4" placeholder="The most challenging aspect for my research is...&#10;My next step is..." oninput="updateTracker()"></textarea>
+      <button class="save-btn" onclick="saveActivity('act4')">Save Response</button>
+      <span class="saved-msg" id="act4-saved">✓ Saved!</span>
+    </div>
+
+    <div style="margin-top:20px; text-align:right;">
+      <button class="save-btn" onclick="downloadResponses()" style="background:var(--tulane-green); font-size:1rem; padding:11px 28px;">⬇ Download All Responses</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SLIDE 17 — CLOSING
+══════════════════════════════════════════════════ -->
+<div class="slide">
+  <div class="closing-slide">
+    <h2>Questions?</h2>
+    <p class="tagline">We're here to help you write a strong, compliant DMSP.</p>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-label">Library Research Data Services</div>
+        <div class="contact-val">library.tulane.edu</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">NIH DMS Policy &amp; FAQs</div>
+        <div class="contact-val">sharing.nih.gov</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">DMPTool — Plan Writing</div>
+        <div class="contact-val">dmptool.org</div>
+      </div>
+      <div class="contact-item">
+        <div class="contact-label">2026 Format Update Notice</div>
+        <div class="contact-val">NOT-OD-26-046</div>
+      </div>
+    </div>
+    <div class="closing-footer">
+      <span>Howard-Tilton Memorial Library · Tulane University · 2026</span>
+      <span>NIH Data Management &amp; Sharing Plan</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /slide-container -->
+
+<script>
+  let currentSlide = 0;
+  const totalSlides = 17;
+  const activities = { act1: false, act2: false, act3: false, act4: false };
+
+  function showSlide(n) {
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.slide')[n].classList.add('active');
+    currentSlide = n;
+    document.getElementById('prevBtn').disabled = n === 0;
+    document.getElementById('nextBtn').disabled = n === totalSlides - 1;
+    document.getElementById('pageIndicator').textContent = `${n + 1} / ${totalSlides}`;
+    document.querySelector('.page-selector').value = n;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function changeSlide(dir) {
+    const next = currentSlide + dir;
+    if (next >= 0 && next < totalSlides) showSlide(next);
+  }
+
+  function toggleCheck(el) {
+    const cb = el.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    el.classList.toggle('checked', cb.checked);
+  }
+
+  function updateTracker() {
+    const filled = ['act1','act2','act3','act4'].filter(id => {
+      const el = document.getElementById(id);
+      return el && el.value.trim().length > 0;
+    }).length;
+    document.getElementById('activityTracker').textContent = `✏️ ${filled} / 4 Activities`;
+  }
+
+  function saveActivity(id) {
+    const val = document.getElementById(id).value.trim();
+    if (val) {
+      activities[id] = true;
+      const msg = document.getElementById(id + '-saved');
+      msg.style.display = 'inline';
+      setTimeout(() => { msg.style.display = 'none'; }, 2500);
+      updateTracker();
+    }
+  }
+
+  function downloadResponses() {
+    const labels = {
+      act1: 'Activity 1: FAIR Self-Check',
+      act2: 'Activity 2: Human Subjects Check',
+      act3: 'Activity 3: Draft Q6 Table',
+      act4: 'Activity 4: Reflection'
+    };
+    let text = 'NIH Data Management & Sharing Plan — Activity Responses\n';
+    text += 'Howard-Tilton Memorial Library | Tulane University | ' + new Date().toLocaleDateString() + '\n';
+    text += '='.repeat(60) + '\n\n';
+    ['act1','act2','act3','act4'].forEach(id => {
+      const val = document.getElementById(id)?.value.trim();
+      text += labels[id] + '\n' + '-'.repeat(40) + '\n';
+      text += (val || '(no response entered)') + '\n\n';
+    });
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'NIH_DMSP_Activities.txt';
+    a.click();
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+    if (e.key === 'Home') showSlide(0);
+    if (e.key === 'End')  showSlide(totalSlides - 1);
+  });
+
+  // Touch / swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+  });
+
+  showSlide(0);
+</script>
+</body>
+</html>
